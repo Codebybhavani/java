@@ -1,0 +1,179 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class CosmeticProduct {
+    private String name;
+    private String category;
+    private List<String> ingredients;
+    private double averageRating;
+    private int numberOfReviews;
+
+    // Constructor
+    public CosmeticProduct(String name, String category, List<String> ingredients) {
+        this.name = name;
+        this.category = category;
+        this.ingredients = ingredients;
+        this.averageRating = 0.0;
+        this.numberOfReviews = 0;
+    }
+
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public List<String> getIngredients() {
+        return ingredients;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public int getNumberOfReviews() {
+        return numberOfReviews;
+    }
+
+    public void addReview(double rating) {
+        this.numberOfReviews++;
+        this.averageRating = ((this.averageRating * (this.numberOfReviews - 1)) + rating) / this.numberOfReviews;
+    }
+
+    public boolean containsHarmfulIngredient(List<String> harmfulIngredients) {
+        for (String ingredient : ingredients) {
+            if (harmfulIngredients.contains(ingredient)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Cosmetic Product: " + name + "\nCategory: " + category + "\nIngredients: " + ingredients.toString() + 
+               "\nAverage Rating: " + averageRating + " (" + numberOfReviews + " reviews)";
+    }
+}
+
+class CosmeticProductAnalysis {
+
+    // List of harmful ingredients (for simplicity, a small list)
+    private static final List<String> harmfulIngredients = List.of("Parabens", "Phthalates", "Formaldehyde");
+
+    // Method to analyze product ingredients
+    public static void analyzeIngredients(CosmeticProduct product) {
+        if (product.containsHarmfulIngredient(harmfulIngredients)) {
+            System.out.println("Warning: This product contains harmful ingredients!");
+        } else {
+            System.out.println("This product has safe ingredients.");
+        }
+    }
+
+    // Method to display analysis results
+    public static void displayAnalysis(CosmeticProduct product) {
+        System.out.println(product);
+        analyzeIngredients(product);
+        System.out.println("------------");
+    }
+
+    // Method to add a review
+    public static void addReview(CosmeticProduct product, double rating) {
+        product.addReview(rating);
+        System.out.println("Review added. Current average rating: " + product.getAverageRating());
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+        // Sample products
+        List<String> product1Ingredients = new ArrayList<>();
+        product1Ingredients.add("Water");
+        product1Ingredients.add("Glycerin");
+        product1Ingredients.add("Parabens");
+
+        List<String> product2Ingredients = new ArrayList<>();
+        product2Ingredients.add("Aloe Vera");
+        product2Ingredients.add("Vitamin E");
+        product2Ingredients.add("Lavender");
+
+        // Creating products
+        CosmeticProduct product1 = new CosmeticProduct("Anti-Aging Cream", "Skincare", product1Ingredients);
+        CosmeticProduct product2 = new CosmeticProduct("Hydrating Lotion", "Skincare", product2Ingredients);
+
+        // Adding products to the analysis system
+        List<CosmeticProduct> products = new ArrayList<>();
+        products.add(product1);
+        products.add(product2);
+
+        // Simulating user interaction
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        while (running) {
+            System.out.println("Choose an action:");
+            System.out.println("1. Display Product Analysis");
+            System.out.println("2. Add a Review");
+            System.out.println("3. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter the product name to analyze:");
+                    String productName = scanner.nextLine();
+
+                    CosmeticProduct productToAnalyze = null;
+                    for (CosmeticProduct product : products) {
+                        if (product.getName().equalsIgnoreCase(productName)) {
+                            productToAnalyze = product;
+                            break;
+                        }
+                    }
+
+                    if (productToAnalyze != null) {
+                        CosmeticProductAnalysis.displayAnalysis(productToAnalyze);
+                    } else {
+                        System.out.println("Product not found.");
+                    }
+                    break;
+
+                case 2:
+                    System.out.println("Enter the product name to review:");
+                    String reviewProductName = scanner.nextLine();
+
+                    CosmeticProduct productToReview = null;
+                    for (CosmeticProduct product : products) {
+                        if (product.getName().equalsIgnoreCase(reviewProductName)) {
+                            productToReview = product;
+                            break;
+                        }
+                    }
+
+                    if (productToReview != null) {
+                        System.out.println("Enter your rating (1-5):");
+                        double rating = scanner.nextDouble();
+                        CosmeticProductAnalysis.addReview(productToReview, rating);
+                    } else {
+                        System.out.println("Product not found.");
+                    }
+                    break;
+
+                case 3:
+                    running = false;
+                    break;
+
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+
+        scanner.close();
+    }
+}
