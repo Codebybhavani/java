@@ -38,6 +38,16 @@ class CosmeticProduct {
         return true;
     }
 
+    public String getBadIngredients(List<String> poisonList) {
+        List<String> badIngredients = new ArrayList<>();
+        for (String ingredient : ingredients) {
+            if (poisonList.contains(ingredient.toLowerCase())) {
+                badIngredients.add(ingredient);
+            }
+        }
+        return badIngredients.isEmpty() ? "No harmful ingredients found." : String.join(", ", badIngredients);
+    }
+
     @Override
     public String toString() {
         return "Product Name: " + name + "\n" +
@@ -89,6 +99,27 @@ public class CosmeticProductAnalysis {
         }
     }
 
+    public static void findProductByName(String name) {
+        boolean found = false;
+        for (CosmeticProduct product : products) {
+            if (product.getName().equalsIgnoreCase(name)) {
+                found = true;
+                System.out.println(product);
+                if (product.isGoodForSkin(poisonList)) {
+                    System.out.println("Good for skin: Yes");
+                } else {
+                    System.out.println("Good for skin: No");
+                    System.out.println("Harmful ingredients found: " + product.getBadIngredients(poisonList));
+                }
+                System.out.println("----------------------");
+                break;
+            }
+        }
+        if (!found) {
+            System.out.println("Product not found.");
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -98,7 +129,8 @@ public class CosmeticProductAnalysis {
             System.out.println("2. Display All Products");
             System.out.println("3. Find Products by Price Range");
             System.out.println("4. Find Products by Ingredient");
-            System.out.println("5. Exit");
+            System.out.println("5. Find Product by Name");
+            System.out.println("6. Exit");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -141,6 +173,12 @@ public class CosmeticProductAnalysis {
                     break;
 
                 case 5:
+                    System.out.print("Enter the product name to search: ");
+                    String searchName = scanner.nextLine();
+                    findProductByName(searchName);
+                    break;
+
+                case 6:
                     System.out.println("Exiting application. Goodbye!");
                     scanner.close();
                     return;
